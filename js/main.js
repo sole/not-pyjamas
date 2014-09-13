@@ -5,7 +5,7 @@
 	var myPA = [1, 2, 3];
 	var myPlusPA = myPA.mapPar(val => val + 1);
 
-	var NUM_ITEMS = 1000000;
+	var NUM_ITEMS = 100000;
 	var hugeArray = new Array(NUM_ITEMS);
 
 	for(var i = 0; i < NUM_ITEMS; i++) {
@@ -16,16 +16,14 @@
 	function benchmark(callback, title) {
 		title = title || '';
 		var t = window.performance.now();
-		callback();
+		for(var i = 0; i < 100; i++) {
+			callback();
+		}
 		var t2 = window.performance.now();
 
 		var elapsed = t2 - t;
 		console.log(title + ' elapsed: ', elapsed);
 	}
-
-	benchmark(function() {
-		console.log('hey there');
-	}, 'print');
 
 	benchmark(function() {
 		hugeArray.mapPar(val => val + 1);
@@ -42,6 +40,16 @@
 			return v + 1;
 		});
 	}, 'sequential map');
+
+	/* // OK this bails out as expected
+	var global = 0;
+	benchmark(function() {
+		hugeArray.mapPar(function(v) {
+			global++;
+			return v + 1 + global;
+		});
+	}, 'this should not work');
+	*/
 
 	
 }).call(this);
