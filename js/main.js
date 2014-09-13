@@ -16,24 +16,25 @@
 	function benchmark(callback, title) {
 		title = title || '';
 		var t = window.performance.now();
-		for(var i = 0; i < 100; i++) {
+		for(var i = 0; i < 500; i++) {
 			callback();
 		}
 		var t2 = window.performance.now();
 
 		var elapsed = t2 - t;
-		console.log(title + ' elapsed: ', elapsed);
+		//console.log(title + ' elapsed: ', elapsed);
+		document.body.innerHTML += '<br />' + title + ' ' + elapsed;
 	}
 
 	benchmark(function() {
 		hugeArray.mapPar(val => val + 1);
-	}, 'parallel sum with fat arrow');
+	}, 'parallel map with fat arrow');
 
 	benchmark(function() {
 		hugeArray.mapPar(function(v) {
 			return v + 1;
 		});
-	}, 'parallel sum with normal callback');
+	}, 'parallel map with normal callback');
 	
 	benchmark(function() {
 		hugeArray.map(function(v) {
