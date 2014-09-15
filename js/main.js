@@ -5,7 +5,8 @@
 	var myPA = [1, 2, 3];
 	var myPlusPA = myPA.mapPar(val => val + 1);
 
-	var NUM_ITEMS = 100000;
+	var NUM_ITEMS = 900;
+	var NUM_ITERATIONS = 300;
 	var hugeArray = new Array(NUM_ITEMS);
 
 	for(var i = 0; i < NUM_ITEMS; i++) {
@@ -16,7 +17,7 @@
 	function benchmark(callback, title) {
 		title = title || '';
 		var t = window.performance.now();
-		for(var i = 0; i < 500; i++) {
+		for(var i = 0; i < NUM_ITERATIONS; i++) {
 			callback();
 		}
 		var t2 = window.performance.now();
@@ -26,7 +27,24 @@
 		document.body.innerHTML += '<br />' + title + ' ' + elapsed;
 	}
 
-	benchmark(function() {
+
+	function notSoExpensiveFunction(v) {
+		return Math.pow( Math.pow( v ) );
+	}
+
+	function expensiveFunction(v) {
+		var localFibs = [0, 1, 1, 2];
+
+		while(v >= localFibs.length) {
+			var lastFibIndex = localFibs.length - 1;
+			var nextFib = localFibs[lastFibIndex - 1] + localFibs[lastFibIndex];
+			localFibs.push(nextFib);
+		}
+	
+		return localFibs[v];
+	}
+
+	/*benchmark(function() {
 		hugeArray.mapPar(val => val + 1);
 	}, 'parallel map with fat arrow');
 
@@ -40,7 +58,15 @@
 		hugeArray.map(function(v) {
 			return v + 1;
 		});
-	}, 'sequential map');
+	}, 'sequential map');*/
+
+	benchmark(function() {
+		hugeArray.mapPar(expensiveFunction);
+	}, 'parallel');
+
+	benchmark(function() {
+		hugeArray.map(expensiveFunction);
+	}, 'sequential');
 
 	/* // OK this bails out as expected
 	var global = 0;
